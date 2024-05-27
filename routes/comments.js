@@ -1,17 +1,13 @@
-const mongoose = require("mongoose");
+const express = require('express');
+const router = express.Router({ mergeParams: true });
+const commentController = require('../controllers/commentController');
+const authController = require('../controllers/authController');
 
-const Schema = mongoose.Schema;
+// Comment routes
+router.get('/', commentController.index); // List all comments for a specific post
+router.post('/', authController.protect, commentController.create); // Create a new comment for a specific post
+router.get('/:commentId', authController.protect, commentController.show); // Get a single comment by ID
+router.put('/:commentId', authController.protect, authController.restrictToAdmin, commentController.update); // Update a comment by ID
+router.delete('/:commentId', authController.protect, authController.restrictToAdmin, commentController.delete); // Delete a comment by ID
 
-const CommentSchema = new Schema({
-  comment_text: { type: String, required: true, maxLength: 300 },
-  timestamp: { type: Date, required: true, default: Date.now },
-  user: { type: Schema.Types.ObjectId, ref: "User", required: true },
-});
-
-// Virtual for comment's URL
-CommentSchema.virtual("url").get(function () {
-  return `/posts/comments/${this._id}`;
-});
-
-// Export model
-module.exports = mongoose.model("Comment", CommentSchema);
+module.exports = router;

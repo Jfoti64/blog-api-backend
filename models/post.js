@@ -1,17 +1,20 @@
-const express = require('express');
-const router = express.Router();
-const postController = require('../controllers/postController');
-const commentsRouter = require('./comments');
-const authController = require('../controllers/authController');
+const mongoose = require("mongoose");
 
-// Post routes
-router.get('/', postController.index); // List all posts
-router.post('/', authController.protect, authController.restrictToAdmin, postController.create); // Create a new post
-router.get('/:id', postController.show); // Get a single post by ID
-router.put('/:id', authController.protect, authController.restrictToAdmin, postController.update); // Update a post by ID
-router.delete('/:id', authController.protect, authController.restrictToAdmin, postController.delete); // Delete a post by ID
+const Schema = mongoose.Schema;
 
-// Nested comment routes
-router.use('/:postId/comments', commentsRouter); // Mount the commentsRouter
+const PostSchema = new Schema({
+  title: { type: String, required: true, maxLength: 100 },
+  post_text: { type: String, required: true, maxLength: 3000 },
+  comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
+  timestamp: { type: Date, required: true, default: Date.now },
+  user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  published: { type: Boolean, default: false },
+});
 
-module.exports = router;
+// Virtual for post's URL
+PostSchema.virtual("url").get(function () {
+  return `/posts/${this._id}`;
+});
+
+// Export model
+module.exports = mongoose.model("Post", PostSchema);
