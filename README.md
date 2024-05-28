@@ -44,7 +44,7 @@ This is a backend application for a blog platform. It provides RESTful API endpo
 
 3. Create a `.env` file in the root directory and add your MongoDB URI and JWT secret:
 
-   MONGODB_URI=mongodb://localhost:27017/blog-api
+   MONGODB_URI=YourMongodbConnection
    JWT_SECRET=your_jwt_secret
 
 4. Start the server:
