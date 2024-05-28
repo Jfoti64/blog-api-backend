@@ -1,7 +1,7 @@
-const { body, validationResult } = require("express-validator");
-const Comment = require("../models/comment");
+const { body, validationResult } = require('express-validator');
+const Comment = require('../models/comment');
 const Post = require('../models/post');
-const asyncHandler = require("express-async-handler");
+const asyncHandler = require('express-async-handler');
 
 // List all comments for a specific post
 exports.index = asyncHandler(async (req, res, next) => {
@@ -12,9 +12,9 @@ exports.index = asyncHandler(async (req, res, next) => {
 // Create a new comment for a specific post
 exports.create = [
   body('comment_text').trim().isLength({ min: 1 }).escape(),
-  body('user').trim().isLength({ min: 1 }).escape(), // Assuming user is passed as a user ID
 
   asyncHandler(async (req, res, next) => {
+    console.log('Received comment:', req.body); // Add this line
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -28,7 +28,7 @@ exports.create = [
 
       const comment = new Comment({
         comment_text: req.body.comment_text,
-        user: req.body.user,
+        user: req.user._id, // Use the authenticated user's ID
         post: req.params.postId,
       });
 
