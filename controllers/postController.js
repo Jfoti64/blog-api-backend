@@ -1,9 +1,20 @@
-const { body, validationResult } = require("express-validator");
-const Post = require("../models/post");
-const asyncHandler = require("express-async-handler");
+const { body, validationResult } = require('express-validator');
+const Post = require('../models/post');
+const asyncHandler = require('express-async-handler');
 
+// List all posts sorted by newest first
 exports.index = asyncHandler(async (req, res, next) => {
-  const posts = await Post.find().populate('user').populate('comments');
+  const posts = await Post.find()
+    .populate('user')
+    .populate({
+      path: 'comments',
+      populate: {
+        path: 'user',
+        select: 'user_name'
+      },
+      options: { sort: { timestamp: -1 } } // Sort comments by newest first
+    })
+    .sort({ timestamp: -1 }); // Sort posts by newest first
   res.json(posts);
 });
 
@@ -23,7 +34,7 @@ exports.create = [
       title: req.body.title,
       post_text: req.body.post_text,
       user: req.body.user,
-      timestamp: Date.now(),
+      timestamp: Date.now(), // Ensure timestamp is set correctly
     });
 
     await post.save();
@@ -33,7 +44,16 @@ exports.create = [
 
 // Get a single post by ID
 exports.show = asyncHandler(async (req, res, next) => {
-  const post = await Post.findById(req.params.id).populate('user').populate('comments');
+  const post = await Post.findById(req.params.id)
+    .populate('user')
+    .populate({
+      path: 'comments',
+      populate: {
+        path: 'user',
+        select: 'user_name'
+      },
+      options: { sort: { timestamp: -1 } } // Sort comments by newest first
+    });
   if (!post) {
     return res.status(404).json({ message: 'Post not found' });
   }
