@@ -35,7 +35,7 @@ This is a backend application for a blog platform. It provides RESTful API endpo
 
 1. Clone the repository:
 
-   git clone https://github.com/your-username/blog-api-backend.git
+   git clone https://github.com/Jfoti64/blog-api-backend
    cd blog-api-backend
 
 2. Install the dependencies:
@@ -50,8 +50,6 @@ This is a backend application for a blog platform. It provides RESTful API endpo
 4. Start the server:
 
    npm run serverstart
-
-   The server should be running on `http://localhost:3000`.
 
 ## Configuration
 
