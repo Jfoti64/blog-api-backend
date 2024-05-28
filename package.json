@@ -8,6 +8,7 @@
   "scripts": {
     "start": "node ./bin/www",
     "devstart": "nodemon ./bin/www",
+    "build": "react-scripts build",
     "serverstart": "DEBUG=blog-api-backend:* npm run devstart"
   },
   "dependencies": {
