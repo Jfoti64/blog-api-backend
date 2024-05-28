@@ -2,6 +2,7 @@ const { body, validationResult } = require('express-validator');
 const User = require('../models/user');
 const asyncHandler = require('express-async-handler');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 // List all users
 exports.index = asyncHandler(async (req, res, next) => {
@@ -9,7 +10,7 @@ exports.index = asyncHandler(async (req, res, next) => {
   res.json(users);
 });
 
-// Create a new user
+// Create a new user (Signup)
 exports.create = [
   body('first_name').trim().isLength({ min: 1 }).escape(),
   body('family_name').trim().isLength({ min: 1 }).escape(),
@@ -22,6 +23,11 @@ exports.create = [
       return res.status(400).json({ errors: errors.array() });
     }
 
+    const existingUser = await User.findOne({ user_name: req.body.user_name });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Username already exists' });
+    }
+
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
     const user = new User({
@@ -32,7 +38,14 @@ exports.create = [
     });
 
     await user.save();
-    res.status(201).json(user);
+
+    const token = jwt.sign(
+      { userId: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    res.status(201).json({ token, user });
   })
 ];
 
